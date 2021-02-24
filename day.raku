@@ -12,11 +12,10 @@ multi sub MAIN () {
 
 multi sub MAIN ($which) {
 	my $list_dir = %*ENV{'HOME'} ~ '/.day';
-	say "days for $which";
 
 	if ("$list_dir/$which".IO ~~ :f & :r) {
 		my $days = count_days("$list_dir/$which");
-		say "Today is day $days";
+		say "Today is $which day $days";
 	}
 	else {
 		say "$which is not a readable file! :(";
