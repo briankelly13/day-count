@@ -4,6 +4,7 @@
 # * --help
 # * match date list name
 #   argument of 'c' match file named 'contact', if no others starting with 'c'
+#   case-insensitive too
 #   DONE?
 # * reset day 1: append today's date to file in question
 #   allow a day offset when resetting: -1 means yesterday was day 1
