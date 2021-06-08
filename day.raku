@@ -63,7 +63,7 @@ sub expand_file_arg ($subfile, $dir) {
 
 	my $matched;
 	for @found -> $f {
-		if ( $f ~~ /$subfile/ ) {
+		if ( $f ~~ m:i/$subfile/ ) {
 			$matched = $f;
 		}
 	}
