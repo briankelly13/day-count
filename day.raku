@@ -4,6 +4,7 @@
 # * --help
 # * match date list name
 #   argument of 'c' match file named 'contact', if no others starting with 'c'
+#   DONE?
 # * reset day 1: append today's date to file in question
 #   allow a day offset when resetting: -1 means yesterday was day 1
 # * given a date, what day was that?
@@ -14,19 +15,26 @@ my $list_dir = %*ENV{'HOME'} ~ '/.day';
 
 multi sub MAIN () {
 	say 'which one?';
-	say map { .basename }, dir $list_dir;
+	say 'Choice of: ' ~ join ' ', map { .basename }, dir $list_dir;
+	exit 1;
 }
 
 multi sub MAIN ($which) {
 
-	find_file_in_dir($which, $list_dir);
+	my $expanded = expand_file_arg($which, $list_dir);
 
-	if ("$list_dir/$which".IO ~~ :f & :r) {
-		my $days = count_days("$list_dir/$which");
-		say "Today is $which day $days";
+	if ( not $expanded ) {
+		say "Could not find file matching '$which'";
+		exit 1;
+	}
+	elsif ("$list_dir/$expanded".IO ~~ :f & :r) {
+		my $days = count_days("$list_dir/$expanded");
+		say "Today is $expanded day $days";
+		exit 0;
 	}
 	else {
-		say "$which is not a readable file! :(";
+		say "$expanded is not a readable file! :(";
+		exit 1;
 	}
 }
 
@@ -49,9 +57,16 @@ sub count_days (Str $day_file) {
 	return $today - $last_date + 1;
 }
 
-sub find_file_in_dir ($subfile, $dir) {
-	say .basename for dir $dir;
-	#my @files = map { .basename }, dir $dir;
-	#say @files;
-	#say map { .basename }, dir $dir;
+sub expand_file_arg ($subfile, $dir) {
+	# get a basenamed list of possible files, sorted by name length
+	my @found = sort -> $a, $b {$a.chars <=> $b.chars}, map { .basename }, dir $dir;
+
+	my $matched;
+	for @found -> $f {
+		if ( $f ~~ /$subfile/ ) {
+			$matched = $f;
+		}
+	}
+
+	return $matched;
 }
