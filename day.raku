@@ -45,12 +45,17 @@ sub count_days (Str $day_file) {
 		$last_line = $line;
 	}
 
-	$last_line ~~ /^
+	my $last_date;
+	if ( $last_line and $last_line ~~ /^
 		$<year>=(\d\d\d\d)
 		$<month>=(\d\d)
 		$<day>=(\d\d)
-	$/;
-	my $last_date = Date.new($/<year>, $/<month>, $/<day>);
+	$/ ) {
+		$last_date = Date.new($/<year>, $/<month>, $/<day>);
+	}
+	else {
+		die "Could not read last date from '$day_file'";
+	}
 
 	my $today = Date.new(DateTime.now());
 
