@@ -1,16 +1,14 @@
 #!env perl6
 
-# TODO: basically working, but...
+# basically working, but...
 # * --help
-# * match date list name
+# * match date list name -- DONE
 #   argument of 'c' match file named 'contact', if no others starting with 'c'
 #   case-insensitive too
-#   DONE?
 # * reset day 1: append today's date to file in question
 #   allow a day offset when resetting: -1 means yesterday was day 1
 # * given a date, what day was that?
-
-use Getopt::Long;
+#   subtract from a different date (prior day-1)
 
 my $list_dir = %*ENV{'HOME'} ~ '/.day';
 
@@ -40,10 +38,7 @@ multi sub MAIN ($which) {
 }
 
 sub count_days (Str $day_file) {
-	my $last_line;
-	for $day_file.IO.lines -> $line {
-		$last_line = $line;
-	}
+	my $last_line = $day_file.IO.lines.tail;
 
 	my $last_date;
 	if ( $last_line and $last_line ~~ /^
@@ -57,10 +52,8 @@ sub count_days (Str $day_file) {
 		die "Could not read last date from '$day_file'";
 	}
 
-	my $today = Date.new(DateTime.now());
-
 	# we're counting starting with 1, so add 1
-	return $today - $last_date + 1;
+	return Date.today() - $last_date + 1;
 }
 
 sub expand_file_arg ($subfile, $dir) {
@@ -69,7 +62,7 @@ sub expand_file_arg ($subfile, $dir) {
 
 	my $matched;
 	for @found -> $f {
-		if ( $f ~~ m:i/$subfile/ ) {
+		if ( $f ~~ m:i/^$subfile/ ) {
 			$matched = $f;
 		}
 	}
