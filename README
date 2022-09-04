@@ -1,0 +1,16 @@
+I'm just playing around with Raku.
+
+This script keeps track of the number of days since something. I use it to track when I last changed my contacts lenses or my furnace filter. It's a simple little thing, but I find it handy. Mostly though, I'm playing around with Raku.
+
+This script isn't totally workable on its own yet. To start, you'll need to do a few things.
+
+* create ~/.day/
+* create plain text files in that folder that have dates in them
+	- I'm using 8-digit dates. 27th June, 2021 is: 20210627
+	- Nothing else on the line, newlines separating entries
+	- Example:
+20210627
+20210815
+20210930
+
+Of course, this will all happen automatically at some point, but this is where we are today.
