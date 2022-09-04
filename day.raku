@@ -3,7 +3,7 @@
 # basically working, but...
 # * --help
 # * match date list name -- DONE
-#   argument of 'c' match file named 'contact', if no others starting with 'c'
+#   argument of 'c' match file named 'contacts', if no others starting with 'c'
 #   case-insensitive too
 # * reset day 1: append today's date to file in question
 #   allow a day offset when resetting: -1 means yesterday was day 1
@@ -12,14 +12,7 @@
 
 my $list_dir = %*ENV{'HOME'} ~ '/.day';
 
-multi sub MAIN () {
-	say 'which one?';
-	say 'Choice of: ' ~ join ' ', map { .basename }, dir $list_dir;
-	exit 1;
-}
-
 multi sub MAIN ($which) {
-
 	my $expanded = expand_file_arg($which, $list_dir);
 
 	if ( not $expanded ) {
@@ -33,6 +26,22 @@ multi sub MAIN ($which) {
 	}
 	else {
 		say "$expanded is not a readable file! :(";
+		exit 1;
+	}
+}
+
+multi sub MAIN (
+	Str :$reset = Str,
+) {
+	if (defined $reset) {
+		my $expanded = expand_file_arg($reset, $list_dir);
+
+		say "Reset $expanded!";
+		exit 0;
+	}
+	else {
+		say 'which one?';
+		say 'Choice of: ' ~ join ' ', map { .basename }, dir $list_dir;
 		exit 1;
 	}
 }
