@@ -1,4 +1,4 @@
-#!env perl6
+#!env raku
 
 # basically working, but...
 # * --help
@@ -10,39 +10,64 @@
 # * given a date, what day was that?
 #   subtract from a different date (prior day-1)
 
+my %*SUB-MAIN-OPTS =
+  :named-anywhere,    # allow named variables at any location
+;
+
 my $list_dir = %*ENV{'HOME'} ~ '/.day';
 
-multi sub MAIN ($which) {
-	my $expanded = expand_file_arg($which, $list_dir);
+multi sub MAIN (
+	$which,
+	Int $ago = 0,
+	Bool :$reset = False,
+) {
+	if ($reset) {
+		if (not $which) {
+			die 'hmm..';
+		}
+		my $expanded = expand_file_arg($which, $list_dir);
 
-	if ( not $expanded ) {
-		say "Could not find file matching '$which'";
-		exit 1;
-	}
-	elsif ("$list_dir/$expanded".IO ~~ :f & :r) {
-		my $days = count_days("$list_dir/$expanded");
-		say "Today is $expanded day $days";
+		#my $days_back = defined($ago) ?? $ago !! 0;
+
+		#say "Reset $expanded! Ago: $days_back";
+		say "Reset $expanded! Ago: $ago";
 		exit 0;
 	}
-	else {
-		say "$expanded is not a readable file! :(";
+	elsif ($which) {
+		my $expanded = expand_file_arg($which, $list_dir);
+
+		if ( not $expanded ) {
+			say "Could not find file matching '$which'";
+			exit 1;
+		}
+		elsif ("$list_dir/$expanded".IO ~~ :f & :r) {
+			my $days = count_days("$list_dir/$expanded");
+			say "Today is $expanded day $days";
+			exit 0;
+		}
+		else {
+			say "$expanded is not a readable file! :(";
+			exit 1;
+		}
+	}
+	elsif ( not $which ) {
+		say 'which one?';
+		say 'Choice of: ' ~ join ', ', sort map { .basename }, dir $list_dir;
 		exit 1;
 	}
 }
 
 multi sub MAIN (
-	Str :$reset = Str,
+	Bool :$help = False,
 ) {
-	if (defined $reset) {
-		my $expanded = expand_file_arg($reset, $list_dir);
-
-		say "Reset $expanded!";
-		exit 0;
+	say "Help? $help";
+	if ( not $help ) {
+		say 'which one?';
+		say 'Choice of: ' ~ join ', ', sort map { .basename }, dir $list_dir;
+		exit 1;
 	}
 	else {
-		say 'which one?';
-		say 'Choice of: ' ~ join ' ', map { .basename }, dir $list_dir;
-		exit 1;
+
 	}
 }
 
