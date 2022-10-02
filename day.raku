@@ -17,20 +17,18 @@ my %*SUB-MAIN-OPTS =
 my $list_dir = %*ENV{'HOME'} ~ '/.day';
 
 multi sub MAIN (
-	$which,
+	Str $which,
 	Int $ago = 0,
 	Bool :$reset = False,
 ) {
 	if ($reset) {
 		if (not $which) {
-			die 'hmm..';
+			say 'Which to reset?';
+			exit 1;
 		}
 		my $expanded = expand_file_arg($which, $list_dir);
 
-		#my $days_back = defined($ago) ?? $ago !! 0;
-
-		#say "Reset $expanded! Ago: $days_back";
-		say "Reset $expanded! Ago: $ago";
+		reset-day($expanded, $ago);
 		exit 0;
 	}
 	elsif ($which) {
@@ -71,6 +69,13 @@ multi sub MAIN (
 	}
 }
 
+multi sub MAIN (
+	Bool :$reset = False,
+) {
+	say 'Which to reset?';
+	exit 1;
+}
+
 sub count_days (Str $day_file) {
 	my $last_line = $day_file.IO.lines.tail;
 
@@ -102,4 +107,9 @@ sub expand_file_arg ($subfile, $dir) {
 	}
 
 	return $matched;
+}
+
+sub reset-day ($day-file, $days) {
+	say "Reset $day-file! Ago: $days";
+	#TBI
 }
