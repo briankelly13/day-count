@@ -28,6 +28,11 @@ multi sub MAIN (
 		}
 		my Str $expanded = expand_file_arg($which, $list_dir);
 
+		if ( not $expanded ) {
+			say "Didn't find any matches for '$which'";
+			exit 1;
+		}
+
 		reset-day($expanded, $ago);
 		exit 0;
 	}
@@ -84,14 +89,14 @@ sub expand_file_arg ($subfile, $dir) {
 	# get a basenamed list of possible files, sorted by name length
 	my @found = sort -> $a, $b {$a.chars <=> $b.chars}, map { .basename }, dir $dir;
 
-	my $matched;
 	for @found -> $f {
 		if ( $f ~~ m:i/^$subfile/ ) {
-			$matched = $f;
+			return $f;
 		}
 	}
 
-	return $matched;
+	# didn't find anything
+	return '';
 }
 
 sub reset-day (Str $day-file, Int $days) {
