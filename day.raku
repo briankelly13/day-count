@@ -55,24 +55,9 @@ multi sub MAIN (
 	}
 }
 
-multi sub MAIN (
-	Bool :$help = False,
-) {
-	say "Help? $help";
-	if ( not $help ) {
-		say 'which one?';
-		say 'Choice of: ' ~ join ', ', sort map { .basename }, dir $list_dir;
-		exit 1;
-	}
-	else {
-
-	}
-}
-
-multi sub MAIN (
-	Bool :$reset = False,
-) {
-	say 'Which to reset?';
+multi sub MAIN () {
+	say 'Which day?';
+	say 'Choice of: ' ~ join ', ', sort map { .basename }, dir $list_dir;
 	exit 1;
 }
 
