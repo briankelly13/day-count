@@ -26,13 +26,13 @@ multi sub MAIN (
 			say 'Which to reset?';
 			exit 1;
 		}
-		my $expanded = expand_file_arg($which, $list_dir);
+		my Str $expanded = expand_file_arg($which, $list_dir);
 
 		reset-day($expanded, $ago);
 		exit 0;
 	}
 	elsif ($which) {
-		my $expanded = expand_file_arg($which, $list_dir);
+		my Str $expanded = expand_file_arg($which, $list_dir);
 
 		if ( not $expanded ) {
 			say "Could not find file matching '$which'";
@@ -109,7 +109,15 @@ sub expand_file_arg ($subfile, $dir) {
 	return $matched;
 }
 
-sub reset-day ($day-file, $days) {
-	say "Reset $day-file! Ago: $days";
-	#TBI
+sub reset-day (Str $day-file, Int $days) {
+	my $new-day = Date.today() - $days;
+
+	my $new-day-string = sprintf('%04d%02d%02d', $new-day.year, $new-day.month, $new-day.day);
+	say "Resetting $day-file! Ago: $days; Date: $new-day-string";
+
+	unless my $day-handle = open "$list_dir/$day-file", :a {
+		die "Could not open '$day-file': {$day-handle.exception}";
+	}
+
+	$day-handle.say($new-day-string);
 }
