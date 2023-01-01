@@ -5,10 +5,15 @@
 # * match date list name -- DONE
 #   argument of 'c' match file named 'contacts', if no others starting with 'c'
 #   case-insensitive too
-# * reset day 1: append today's date to file in question
+# * reset day 1: append today's date to file in question -- DONE
 #   allow a day offset when resetting: -1 means yesterday was day 1
 # * given a date, what day was that?
 #   subtract from a different date (prior day-1)
+# * create a new day tracker
+#   --new or somesuch?
+# * abbreviated list name matches more than one -- DONE
+#   e.g., 'foo' and 'furnace'
+#   prompt to be more specific, show potential matches
 
 my %*SUB-MAIN-OPTS =
   :named-anywhere,    # allow named variables at any location
@@ -89,14 +94,26 @@ sub expand_file_arg ($subfile, $dir) {
 	# get a basenamed list of possible files, sorted by name length
 	my @found = sort -> $a, $b {$a.chars <=> $b.chars}, map { .basename }, dir $dir;
 
+	my @matched;
+
 	for @found -> $f {
 		if ( $f ~~ m:i/^$subfile/ ) {
-			return $f;
+			push @matched, $f;
 		}
 	}
 
-	# didn't find anything
-	return '';
+	if ( not @matched ) {
+		# didn't find anything
+		return '';
+	}
+	elsif ( 1 == @matched.elems ) {
+		return @matched[0];
+	}
+	else {
+		# matched more than 1
+		say "Be more specific. Matched: " ~ join ', ', @matched;
+		return '';
+	}
 }
 
 sub reset-day (Str $day-file, Int $days) {
