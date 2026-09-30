@@ -25,6 +25,7 @@ multi sub MAIN (
 	Str $which,
 	Int $ago = 0,
 	Bool :$reset = False,
+	Bool :$edit  = False,
 ) {
 	if ($reset) {
 		if (not $which) {
@@ -39,6 +40,21 @@ multi sub MAIN (
 		}
 
 		reset-day($expanded, $ago);
+		exit 0;
+	}
+	elsif ($edit) {
+		if (not $which) {
+			say 'Which to edit?';
+			exit 1;
+		}
+		my Str $expanded = expand_file_arg($which, $list_dir);
+
+		if ( not $expanded ) {
+			say "Didn't find any matches for '$which'";
+			exit 1;
+		}
+
+		run %*ENV{'EDITOR'}, "$list_dir/$expanded";
 		exit 0;
 	}
 	elsif ($which) {
